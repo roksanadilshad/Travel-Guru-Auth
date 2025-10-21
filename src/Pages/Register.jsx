@@ -1,10 +1,12 @@
 import React, { use, useState } from 'react';
-import { AuthContext } from './AuthProvider/AuthContext';
-import { Link } from 'react-router';
+
+import { Link, Navigate } from 'react-router';
+import { AuthContext } from '../Context/AuthContext';
+import { updateCurrentUser } from 'firebase/auth';
 
 const Registration = () => {
-    const {createUser} = use(AuthContext);
-    const [nameError, setNameError] = useState('');
+     const {createUser, setUser} = use(AuthContext);
+     const [nameError, setNameError] = useState('');
   
 
     const handleSubmit = (e) =>{
@@ -26,17 +28,15 @@ const Registration = () => {
         createUser(email, password)
         .then(result =>{
             console.log(result.user);
-            //  updateUser({ displayName: name, photoURL: photo })
-        //   .then(() => {
-        //     setUser({ ...user, displayName: name, photoURL: photo });
-        //     navigate("/");
-        //   })
-    //      .catch((error) => {
-    //         console.log(error);
-    //         setUser(user);
-    //       });
-    //   })
-
+             updateCurrentUser({ displayName: name, photoURL: photo })
+          .then(() => {
+            setUser({ ...user, displayName: name, photoURL: photo });
+            Navigate("/");
+          })
+         .catch((error) => {
+            console.log(error);
+            setUser(result.user);
+          });
             
         })
         .catch(error => {
